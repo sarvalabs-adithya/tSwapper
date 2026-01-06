@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createWallet, getAccountAssets, transfer, getAddress } from './lib/logic';
+import { createWallet, getAccountAssets, transfer } from './lib/logic';
 
 export default function App() {
   const [wallet, setWallet] = useState(null);
@@ -158,8 +158,7 @@ function Login({ onLogin }) {
     setError('');
     
     try {
-      const wallet = await createWallet(mnemonic.trim());
-      const addr = getAddress(wallet);
+      const { wallet, address: addr } = await createWallet(mnemonic.trim());
       onLogin(wallet, mnemonic.trim(), hdPath || "m/44'/6174'/7020'/0/0", addr);
     } catch (err) {
       setError(err.message);
@@ -210,7 +209,7 @@ function TransferForm({ mnemonic, hdPath, asset, loading, setLoading, setResult,
     
     try {
       // Recreate wallet from mnemonic for each transfer to ensure signing capability
-      const wallet = await createWallet(mnemonic);
+      const { wallet } = await createWallet(mnemonic);
       const { hash } = await transfer(wallet, asset.id, receiver, parseInt(amount));
       setResult({ success: true, message: `Success! Sent ${amount} ${asset.symbol || 'Unknown Asset'}. Hash: ${hash}` });
       setReceiver('');

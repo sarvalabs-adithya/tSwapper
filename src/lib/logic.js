@@ -6,14 +6,9 @@ export async function createWallet(mnemonic) {
   const derivationPath = "m/44'/6174'/7020'/0/0";
   const wallet = await Wallet.fromMnemonic(mnemonic, derivationPath);
   wallet.connect(provider);
-  return wallet;
-}
-
-export function getAddress(wallet) {
-  if (wallet.address) return wallet.address;
-  if (wallet.identifier?.toHex) return wallet.identifier.toHex();
-  if (wallet.getIdentifier) return wallet.getIdentifier().toHex();
-  throw new Error('Could not get wallet address');
+  const address = wallet.address || wallet.identifier?.toHex() || wallet.getIdentifier()?.toHex();
+  if (!address) throw new Error('Could not get wallet address');
+  return { wallet, address };
 }
 
 export async function getAccountAssets(address) {
