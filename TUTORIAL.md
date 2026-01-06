@@ -92,7 +92,7 @@ npm install
 
 **Open the Logic File**
 
-Open `src/lib/logic.js`. You will see empty functions marked with TODO. Your mission is to implement them using the MOI SDK.
+👉 **Start here:** Navigate to `src/lib/logic.js`. You will see empty functions marked with TODO. Your mission is to implement them using the MOI SDK.
 
 ---
 

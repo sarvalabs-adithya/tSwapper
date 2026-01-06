@@ -51,7 +51,11 @@ All wallet operations happen **in the browser** — no server needed.
 
 ## Learning Path
 
-This is a **learning scaffold** with TODO placeholders. Your mission is to implement the blockchain logic in `src/lib/logic.js`:
+This is a **learning scaffold** with TODO placeholders. 
+
+**👉 Start here:** Navigate to `src/lib/logic.js` to begin implementing the blockchain logic.
+
+Your mission is to implement the functions in `src/lib/logic.js`:
 
 - **Mission 1:** Connection & Identity (`createWallet`)
 - **Mission 2:** Reading State (`getAccountAssets`)
