@@ -209,7 +209,7 @@ function TransferForm({ mnemonic, hdPath, asset, loading, setLoading, setResult,
     
     try {
       // Recreate wallet from mnemonic for each transfer to ensure signing capability
-      const wallet = await createWallet(mnemonic);
+      const { wallet } = await createWallet(mnemonic);
       const { hash } = await transfer(wallet, asset.id, receiver, parseInt(amount));
       setResult({ success: true, message: `Success! Sent ${amount} ${asset.symbol || 'Unknown Asset'}. Hash: ${hash}` });
       setReceiver('');
