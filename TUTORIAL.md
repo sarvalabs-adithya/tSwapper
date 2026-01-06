@@ -128,7 +128,11 @@ export async function createWallet(mnemonic) {
   const wallet = await Wallet.fromMnemonic(mnemonic, derivationPath);
   // 4. Attach provider to enable network IO
   wallet.connect(provider);
-  return wallet;
+  // 5. Extract address from wallet object
+  const address = wallet.address || wallet.identifier?.toHex() || wallet.getIdentifier()?.toHex();
+  if (!address) throw new Error('Could not get wallet address');
+  // 6. Return both wallet and address
+  return { wallet, address };
 }
 ```
 
