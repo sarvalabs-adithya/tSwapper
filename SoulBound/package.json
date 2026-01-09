@@ -1,0 +1,11 @@
+{
+  "name": "soulbound-badge",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "node deploy.js"
+  },
+  "dependencies": {
+    "js-moi-sdk": "^0.7.0-rc4"
+  }
+}

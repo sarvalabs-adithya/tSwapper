@@ -1,0 +1,749 @@
+{
+  "syntax": 1,
+  "engine": {
+    "kind": "PISA",
+    "flags": [],
+    "version": "0.5.0"
+  },
+  "kind": "logic",
+  "elements": [
+    {
+      "ptr": 0,
+      "kind": "literal",
+      "data": {
+        "type": "string",
+        "value": "0x064f6e6c79206f776e65722063616e207570646174652072617465"
+      }
+    },
+    {
+      "ptr": 1,
+      "kind": "event",
+      "data": {
+        "name": "SwapExecuted",
+        "topics": 2,
+        "fields": [
+          {
+            "slot": 0,
+            "label": "user",
+            "type": "identifier"
+          },
+          {
+            "slot": 1,
+            "label": "direction",
+            "type": "u64"
+          },
+          {
+            "slot": 2,
+            "label": "amount_in",
+            "type": "u256"
+          },
+          {
+            "slot": 3,
+            "label": "amount_out",
+            "type": "u256"
+          }
+        ]
+      }
+    },
+    {
+      "ptr": 2,
+      "kind": "state",
+      "data": {
+        "mode": "logic",
+        "fields": [
+          {
+            "slot": 0,
+            "label": "rate",
+            "type": "u64"
+          },
+          {
+            "slot": 1,
+            "label": "owner",
+            "type": "identifier"
+          },
+          {
+            "slot": 2,
+            "label": "asset_a",
+            "type": "identifier"
+          },
+          {
+            "slot": 3,
+            "label": "asset_b",
+            "type": "identifier"
+          },
+          {
+            "slot": 4,
+            "label": "total_swaps",
+            "type": "u64"
+          },
+          {
+            "slot": 5,
+            "label": "volume_a",
+            "type": "u256"
+          },
+          {
+            "slot": 6,
+            "label": "volume_b",
+            "type": "u256"
+          }
+        ]
+      }
+    },
+    {
+      "ptr": 3,
+      "deps": [
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "Init",
+        "mode": "dynamic",
+        "kind": "deploy",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "initial_rate",
+            "type": "u64"
+          },
+          {
+            "slot": 1,
+            "label": "token_a",
+            "type": "identifier"
+          },
+          {
+            "slot": 2,
+            "label": "token_b",
+            "type": "identifier"
+          }
+        ],
+        "returns": [],
+        "executes": {
+          "bin": [
+            144,
+            0,
+            0,
+            4,
+            1,
+            0,
+            155,
+            0,
+            1,
+            159,
+            0,
+            144,
+            0,
+            1,
+            132,
+            1,
+            155,
+            0,
+            1,
+            159,
+            0,
+            144,
+            0,
+            2,
+            4,
+            1,
+            1,
+            155,
+            0,
+            1,
+            159,
+            0,
+            144,
+            0,
+            3,
+            4,
+            1,
+            2,
+            155,
+            0,
+            1,
+            159,
+            0,
+            144,
+            0,
+            4,
+            42,
+            1,
+            5,
+            155,
+            0,
+            1,
+            159,
+            0,
+            144,
+            0,
+            5,
+            42,
+            1,
+            5,
+            10,
+            2,
+            13,
+            1,
+            1,
+            19,
+            2,
+            84,
+            2,
+            1,
+            0,
+            155,
+            0,
+            2,
+            159,
+            0,
+            144,
+            0,
+            6,
+            42,
+            1,
+            5,
+            10,
+            2,
+            13,
+            1,
+            1,
+            19,
+            2,
+            84,
+            2,
+            1,
+            0,
+            155,
+            0,
+            2,
+            159,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 4,
+      "deps": [
+        1,
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "SwapAtoB",
+        "mode": "dynamic",
+        "kind": "invoke",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "amount_in",
+            "type": "u256"
+          }
+        ],
+        "returns": [
+          {
+            "slot": 0,
+            "label": "amount_out",
+            "type": "u256"
+          }
+        ],
+        "executes": {
+          "bin": [
+            144,
+            1,
+            0,
+            156,
+            0,
+            1,
+            158,
+            1,
+            4,
+            1,
+            0,
+            10,
+            2,
+            13,
+            0,
+            0,
+            19,
+            2,
+            84,
+            2,
+            0,
+            0,
+            116,
+            0,
+            1,
+            2,
+            144,
+            4,
+            4,
+            156,
+            2,
+            4,
+            158,
+            4,
+            144,
+            4,
+            5,
+            156,
+            3,
+            4,
+            158,
+            4,
+            144,
+            4,
+            4,
+            42,
+            5,
+            5,
+            112,
+            5,
+            114,
+            2,
+            2,
+            5,
+            155,
+            4,
+            2,
+            159,
+            4,
+            144,
+            2,
+            5,
+            114,
+            3,
+            3,
+            1,
+            155,
+            2,
+            3,
+            159,
+            2,
+            10,
+            2,
+            132,
+            3,
+            85,
+            2,
+            0,
+            3,
+            42,
+            3,
+            5,
+            85,
+            2,
+            1,
+            3,
+            85,
+            2,
+            2,
+            1,
+            85,
+            2,
+            3,
+            0,
+            17,
+            1,
+            1,
+            46,
+            1,
+            1,
+            2,
+            131,
+            2,
+            73,
+            2,
+            2,
+            142,
+            2,
+            1,
+            5,
+            0,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 5,
+      "deps": [
+        1,
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "SwapBtoA",
+        "mode": "dynamic",
+        "kind": "invoke",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "amount_in",
+            "type": "u256"
+          }
+        ],
+        "returns": [
+          {
+            "slot": 0,
+            "label": "amount_out",
+            "type": "u256"
+          }
+        ],
+        "executes": {
+          "bin": [
+            144,
+            1,
+            0,
+            156,
+            0,
+            1,
+            158,
+            1,
+            4,
+            1,
+            0,
+            10,
+            2,
+            13,
+            0,
+            0,
+            19,
+            2,
+            84,
+            2,
+            0,
+            0,
+            117,
+            0,
+            1,
+            2,
+            144,
+            4,
+            4,
+            156,
+            2,
+            4,
+            158,
+            4,
+            144,
+            4,
+            6,
+            156,
+            3,
+            4,
+            158,
+            4,
+            144,
+            4,
+            4,
+            42,
+            5,
+            5,
+            112,
+            5,
+            114,
+            2,
+            2,
+            5,
+            155,
+            4,
+            2,
+            159,
+            4,
+            144,
+            2,
+            6,
+            114,
+            3,
+            3,
+            1,
+            155,
+            2,
+            3,
+            159,
+            2,
+            10,
+            2,
+            132,
+            3,
+            85,
+            2,
+            0,
+            3,
+            42,
+            3,
+            5,
+            112,
+            3,
+            85,
+            2,
+            1,
+            3,
+            85,
+            2,
+            2,
+            1,
+            85,
+            2,
+            3,
+            0,
+            17,
+            1,
+            1,
+            46,
+            1,
+            1,
+            2,
+            131,
+            2,
+            73,
+            2,
+            2,
+            142,
+            2,
+            1,
+            5,
+            0,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 6,
+      "deps": [
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "GetRate",
+        "mode": "static",
+        "kind": "invoke",
+        "accepts": [],
+        "returns": [
+          {
+            "slot": 0,
+            "label": "rate",
+            "type": "u64"
+          }
+        ],
+        "executes": {
+          "bin": [
+            144,
+            0,
+            0,
+            5,
+            0,
+            0,
+            158,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 7,
+      "deps": [
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "GetPoolInfo",
+        "mode": "static",
+        "kind": "invoke",
+        "accepts": [],
+        "returns": [
+          {
+            "slot": 0,
+            "label": "asset_a",
+            "type": "identifier"
+          },
+          {
+            "slot": 1,
+            "label": "asset_b",
+            "type": "identifier"
+          },
+          {
+            "slot": 2,
+            "label": "rate",
+            "type": "u64"
+          },
+          {
+            "slot": 3,
+            "label": "owner",
+            "type": "identifier"
+          }
+        ],
+        "executes": {
+          "bin": [
+            144,
+            0,
+            2,
+            5,
+            0,
+            0,
+            158,
+            0,
+            144,
+            0,
+            3,
+            5,
+            0,
+            1,
+            158,
+            0,
+            144,
+            0,
+            0,
+            5,
+            0,
+            2,
+            158,
+            0,
+            144,
+            0,
+            1,
+            5,
+            0,
+            3,
+            158,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 8,
+      "deps": [
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "GetStats",
+        "mode": "static",
+        "kind": "invoke",
+        "accepts": [],
+        "returns": [
+          {
+            "slot": 0,
+            "label": "total_swaps",
+            "type": "u64"
+          },
+          {
+            "slot": 1,
+            "label": "volume_a",
+            "type": "u256"
+          },
+          {
+            "slot": 2,
+            "label": "volume_b",
+            "type": "u256"
+          }
+        ],
+        "executes": {
+          "bin": [
+            144,
+            0,
+            4,
+            5,
+            0,
+            0,
+            158,
+            0,
+            144,
+            0,
+            5,
+            5,
+            0,
+            1,
+            158,
+            0,
+            144,
+            0,
+            6,
+            5,
+            0,
+            2,
+            158,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 9,
+      "deps": [
+        0,
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "SetRate",
+        "mode": "dynamic",
+        "kind": "invoke",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "new_rate",
+            "type": "u64"
+          }
+        ],
+        "returns": [],
+        "executes": {
+          "bin": [
+            42,
+            0,
+            4,
+            144,
+            1,
+            1,
+            156,
+            0,
+            1,
+            158,
+            1,
+            132,
+            1,
+            70,
+            0,
+            1,
+            0,
+            17,
+            1,
+            11,
+            3,
+            1,
+            0,
+            17,
+            0,
+            0,
+            43,
+            0,
+            0,
+            6,
+            0,
+            1,
+            144,
+            0,
+            0,
+            4,
+            1,
+            0,
+            155,
+            0,
+            1,
+            159,
+            0
+          ]
+        },
+        "catches": []
+      }
+    }
+  ]
+}

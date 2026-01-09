@@ -1,0 +1,25 @@
+coco asset SoulboundBadge
+
+// 1. STATE: We remember who the admin is
+state logic:
+    admin Identifier
+
+// 2. DEPLOY: Set the creator as the admin and mint them one badge
+endpoint deploy Init():
+    mutate Sender -> SoulboundBadge.Logic.admin
+
+// 3. MINT: Only Admin can create new badges
+endpoint dynamic IssueBadge(recipient Identifier):
+    memory admin Identifier
+    observe  admin <- SoulboundBadge.Logic.admin
+    if Sender != admin:
+        throw "Only Admin can issue badges!"
+
+   
+    asset.Mint(token_id: 0, beneficiary: recipient, amount: U256(1))
+
+// 4. TRANSFER: The Custom Rule
+// We expose a Transfer endpoint, but we make it fail instantly.
+// This makes the token impossible to move.
+endpoint Transfer(beneficiary Identifier, amount U256):
+    throw "This asset is Soulbound and cannot be transferred!"

@@ -1,5 +1,5 @@
 # Your first DiApp
-## (Without smart contracts)
+## (Native Assets)
 
 **By: Adithya Ganesh (DevRel)**
 
@@ -12,6 +12,7 @@ Before we write a single line of code, it is critical to understand that MOI is 
 ### 0.1 What is a Blockchain? (The Engineer's View)
 
 Forget "crypto" for a second. To a developer, a blockchain is simply a **Replicated State Machine**.
+
 - **State:** The current snapshot of data (e.g., "Alice has $10").
 - **Transition:** A function that changes the state (e.g., "Alice sends $5 to Bob").
 - **Consensus:** The network agrees on the new state.
@@ -21,57 +22,120 @@ In older blockchains (like Bitcoin or Ethereum), the Smart Contract is the cente
 ### 0.2 The MOI Difference: You are the Center
 
 MOI flips this model. It is **Participant-Centric**.
+
 - **Identity:** Your account is not just a key; it is a **Digital Container** that holds references to your assets.
 - **Assets:** Assets are not rows in a contract's database; they are **Logical Objects** that move with you.
-- **Advantage:** You don't scan the entire network to find your tokens.
-- **No smart contracts:** While we do support coco (our native context oriented programming language) for advanced logics, most use cases of blockchain can be performed with just simple SDK interaction calls (asset creation, burn, mint, transfer) and many more in the works related to agentic AI, e-commerce etc.
+- **No code/low code:** While we do support coco (our native context oriented programming language) for advanced logics, most use cases of blockchain can be performed with just simple SDK interaction calls (asset creation, burn, mint, transfer) and many more in the works related to agentic AI, e-commerce etc.
 
 You just look in your own **"Digital Backpack."**
+
+### 0.3 Native Assets
+
+Assets are "native" in MOI because the protocol recognizes and manages them directly at the network level. This means core asset actions like create, transfer, mint, burn, approve, and revoke do not require smart contracts. Your assets are first-class objects the chain understands by default.
+
+This is particularly helpful because of two reasons:
+
+- **Ease of development:** Developers can build useful DiApps using standard protocol asset operations via the SDK, without writing, deploying, or maintaining token smart contracts. That means fewer moving parts.
+- **Safety:** On contract-centric chains, every token is its own piece of code, and "ERC-20 compliant" doesn't guarantee safe or consistent behavior. With native assets, core actions like transfer/mint/burn follow protocol-enforced, standardized rules, reducing the exposure for token-specific bugs and malicious edge cases. Custom behavior is still possible through custom logic, but the baseline asset layer stays predictable and secure.
+
+#### 0.3.1 MOI Asset Standards (MAS)
+
+If assets are native objects, how does the network know if an asset is a currency (fungible) or a unique collectible (NFT)?
+
+MOI uses **MAS (MOI Asset Standards)**. Think of these as "pre-installed behavior profiles." When you create an asset, you simply tell the network which standard to use, and it automatically enforces the correct rules.
+
+- **MAS0 (Fungible Asset):** The standard for interchangeable tokens, similar to ERC-20 on Ethereum. Every unit is identical to another (e.g., Stablecoins, Loyalty Points). **We will be using MAS0 in this tutorial.**
+- **MAS1 (Non-Fungible Asset):** The standard for unique items, similar to ERC-721. Each unit has a unique ID (e.g., Digital Art, Real Estate Deeds).
+- **MAS2 (Hybrid Asset):** A standard that mixes both, allowing for complex collections (e.g., A video game inventory containing both Gold Coins and Unique Weapons).
+
+For implementation details check out their docs: https://js-moi-sdk.docs.moi.technology/asset#
+
+### 0.4 Developer Tools Offered (Your MOI Starter Kit)
+
+Before we jump into code, here are the main tools you'll keep bouncing between while building on MOI. Think of this as your toolbelt check before we start the missions.
+
+#### 0.4.1 IOMe (Wallet + Identity)
+
+IOMe is how you create and control your MOI identity. This is where your mnemonic lives and where signatures come from.
+
+You'll use IOMe for:
+- **Generating your wallet / mnemonic:** This is the seed your code uses to create a Wallet instance.
+- **Connecting to Voyage:** For devnet testing, it's the quickest way to spin up an identity and fund it.
+
+**Important reminder:** if someone gets your mnemonic, they get your account. Treat it like the master key.
+
+#### 0.4.2 Voyage (Explorer + Playgrounds)
+
+Voyage is MOI's official explorer, but it's more than that. It's where you go to see the chain, verify your interactions, and even create test assets without writing code.
+
+You'll use Voyage for:
+- **Explorer:** Search any address, asset ID, logic ID, or interaction hash and inspect exactly what happened.
+- **Submissions / Receipts:** Your "proof page." If your app says "transfer successful," this is where you confirm the receipt, fuel used, and participants involved.
+- **Testnet Faucet:** Grab testnet KMOI (fuel) so you can actually send interactions.
+- **Asset Playground:** Quickly create a test token (like TEST) and copy the Asset ID for your app.
+- **Logic Playground:** Later, when you deploy custom logic, this is your fastest way to test routines and outputs without building a full UI.
+
+Basically: **Voyage is your debugger + playground.** You'll keep it open in a tab the whole time.
+
+#### 0.4.3 JS-MOI-SDK (The Bridge Between Your App and MOI)
+
+This is what you'll actually code with. js-moi-sdk is how your Next.js/React app talks to the MOI network.
+
+You'll use it for:
+- **Provider:** Network connection (read chain data)
+- **Wallet/Signer:** Identity (sign and send interactions)
+- **Interactions:** Transaction container
+- **Operations:** Actions inside an interaction (transfer, mint, burn, create, approve, revoke, etc.)
+- **Receipts:** Execution record you wait for after sending an interaction
+- **TDU:** "Digital backpack" query for a user's full asset portfolio
+
+**Big picture:** the SDK is your client library, like ethers.js is for Ethereum, but built around MOI's participant-centric model.
+
+### 0.5 Let's Get Started (Setup Checklist)
+
+Before we build anything, we need two things:
+1. An identity on MOI (your IOMe wallet)
+2. Fuel tokens on devnet (testnet KMOI) so you can send interactions
+
+#### 0.5.1 Create Your IOMe Wallet (Your MOI Identity)
+
+We use the IOMe interface directly inside Voyage.
+
+1. Open [Voyage Devnet](https://voyage.moi.technology)
+2. Click **"Generate IOMe Id"**
+3. You'll get a 12-word mnemonic (Secret Recovery Phrase)
+
+**CRITICAL:** Copy and save this mnemonic securely. You will use it in code to authorize transactions. **Do not share it with anyone.**
+
+#### 0.5.2 Fund Your Wallet (Get Testnet Fuel)
+
+A fresh wallet starts at 0 KMOI, which means you can't create assets or send transfers yet.
+
+1. In Voyage, find the **"Testnet Faucet"** button
+2. Click it to request testnet KMOI
+3. Wait ~10 seconds and check your balance
+
+You should see around 100k testnet KMOI.
+
+#### 0.5.3 Make Sure Your Local Setup is Ready
+
+You'll need:
+- **Node.js** v16+
+- Basic familiarity with React/Next.js and JavaScript
+
+#### 0.5.4 Keep These Open While Building
+
+You'll keep bouncing between:
+- [Voyage Explorer](https://voyage.moi.technology) (verify transactions / receipts)
+- [JS-MOI-SDK docs](https://js-moi-sdk.docs.moi.technology) (look up classes + methods)
+- [MOI Concepts Docs](https://docs.moi.technology) (Understand MOI Fundamentals)
+- [Discord](https://discord.gg/GkP7mDw5) (if you get stuck) - Join our discord server and head on to the "dev-chat" channel. Feel free to ask any and all questions.
 
 ---
 
 ## 1. Introduction
 
-To get you acclimated with our contract-less approach, we are going to be building a very simple token transfer application. It is very simple, we will build an interface that allows you to select from your existing assets and transfer them to a participant address specified by the user all without writing a single smart contract, just interactive with the network through javascript SDK calls.
-
-### 1.1 Prerequisites
-
-Before we start, it is important that the developer has experience with full stack applications while also having a basic understanding of blockchain.
-
-#### 1.1.1 IOMe Wallet & Devnet Fuel Tokens
-
-Before writing code, you need a valid identity on the MOI network and some Fuel (gas) to pay for transactions.
-
-**Step 1: Create Your IOMe Wallet**
-
-We use the IOMe interface directly on the Voyage Explorer.
-- Navigate to [Voyage Devnet](https://voyage.moi.technology).
-- Click **"Generate IOMe Id"** to create a new wallet
-- **CRITICAL:** When your 12-word Mnemonic (Secret Recovery Phrase) is displayed, copy and save it securely. You will need this string in your code to authorize transactions. **DO NOT SHARE THIS INFO WITH ANYONE**
-
-**Step 2: Fund Your Wallet (The Faucet)**
-
-Your new wallet has 0 testnet KMOI. You cannot send assets or mint tokens without paying network fees.
-- Once logged in to Voyage, look for the **"Testnet Faucet"** button
-- Click it to request Testnet KMOI tokens.
-- Wait ~10 seconds and check your balance, you should see 100k testnet KMOI tokens
-
-**Step 3: Technical Requirements**
-- **Node.js:** v16 or higher installed.
-- **Experience:** Basic familiarity with React/Next.js and JavaScript (Async/Await).
-
-#### 1.1.2 Community and Resources
-
-**Join the Developer Community**
-
-If you get stuck or have questions about the SDK, join the official Discord server.
-- **Discord Invite:** https://discord.gg/GkP7mDw5
-
-**Documentation & Tools**
-
-Keep these resources handy while you build:
-- **JS-MOI-SDK Documentation:** js-moi-sdk.docs.moi.technology
-- **Voyage Explorer:** voyage.moi.technology (To verify your transactions)
+To get you acclimated with native assets, we are going to be building a very simple token transfer application. We will build an interface that allows you to select from your existing assets and transfer them to a participant address specified by the user all without writing a single smart contract, just interactive with the network through javascript SDK calls.
 
 ### 1.2 Setup
 
@@ -90,9 +154,9 @@ cd tSwapper
 npm install
 ```
 
-**Open the Logic File**
+### 1.3 Open the Logic File
 
-👉 **Start here:** Navigate to `src/lib/logic.js`. You will see empty functions marked with TODO. Your mission is to implement them using the MOI SDK.
+👉 **Start here:** Open `src/lib/logic.js`. You will see empty functions marked with TODO. Your mission is to implement them using the MOI SDK.
 
 ---
 
@@ -117,21 +181,18 @@ Update `createWallet` in `src/lib/logic.js`:
 ```javascript
 import { Wallet, JsonRpcProvider } from 'js-moi-sdk';
 
-// 1. Initialize Network Provider (Voyage Devnet)
-// We define this globally so other functions can use it later
 const provider = new JsonRpcProvider('https://dev.voyage-rpc.moi.technology/devnet');
 
 export async function createWallet(mnemonic) {
-  // 2. Define standard MOI derivation path 
   const derivationPath = "m/44'/6174'/7020'/0/0";
-  // 3. Create Wallet instance from mnemonic
   const wallet = await Wallet.fromMnemonic(mnemonic, derivationPath);
-  // 4. Attach provider to enable network IO
-  wallet.connect(provider);
-  // 5. Extract address from wallet object
+wallet.connect(provider);
+
+  // Extract address from wallet object
   const address = wallet.address || wallet.identifier?.toHex() || wallet.getIdentifier()?.toHex();
   if (!address) throw new Error('Could not get wallet address');
-  // 6. Return both wallet and address
+
+  // Return both wallet and address
   return { wallet, address };
 }
 ```
@@ -157,13 +218,13 @@ Let's write the logical flow first. Don't copy this yet—just read it to unders
 export async function getAccountAssets(address) {
   // 1. Get the raw list of assets (IDs and Balances)
   const userAssetEntries = await provider.getTDU(address);
-  
+
   // 2. Loop through every asset to find its human-readable Symbol
   const accountAssets = await Promise.all(
     userAssetEntries.map(async (assetEntry) => {
       // Fetch metadata (like "MOI" or "USDC")
       const assetInfo = await provider.getAssetInfoByAssetID(assetEntry.asset_id);
-      
+
       return {
         id: assetEntry.asset_id,
         balance: BigInt(assetEntry.amount).toString(), // Format the big numbers
@@ -171,7 +232,7 @@ export async function getAccountAssets(address) {
       };
     })
   );
-  
+
   return accountAssets;
 }
 ```
@@ -192,13 +253,13 @@ Update the `getAccountAssets` function in `src/lib/logic.js` with this robust ve
 export async function getAccountAssets(address) {
   // 1. Query the Account State directly
   const userAssetEntries = await provider.getTDU(address);
-  
+
   // Guard Rail 1: If the user is new, stop here.
   // We return null so the UI knows to show an empty state.
   if (!userAssetEntries || !Array.isArray(userAssetEntries)) {
     return null;
   }
-  
+
   const accountAssets = await Promise.all(
     userAssetEntries.map(async (assetEntry) => {
       try {
@@ -210,8 +271,7 @@ export async function getAccountAssets(address) {
           symbol: assetInfo?.symbol
         };
       } catch {
-        // Guard Rail 2: If metadata fails, don't crash! 
-        // Return the asset anyway, just without a symbol.
+        // Guard Rail 2: If metadata fails, don't crash!
         return {
           id: assetEntry.asset_id,
           balance: BigInt(assetEntry.amount).toString(),
@@ -227,26 +287,87 @@ export async function getAccountAssets(address) {
 
 ---
 
-## Mission 3: Writing State (Transfer)
+## Mission 3: Creating Your Own MAS0 Asset on MOI
 
-**Goal:** Execute an asset transfer.
+**Goal:** Create a new MAS0 asset on the MOI network and capture its Asset ID.
 
 ### Understanding the Task
 
-In most blockchains, to interact with a token, you need two things:
-- The Contract Address.
-- The ABI (The specific code interface for that contract).
+On MOI, assets are native, meaning the protocol understands assets as first-class objects out of the box. So "creating a token" doesn't mean writing or deploying token code. Instead, you create an asset through a standard network operation using the SDK.
 
-If you lose the ABI, you can't talk to the contract. It's like trying to make a phone call without knowing the language the other person speaks.
+You have two ways to do this:
+- **The Visual Way (Voyage):** Quickest for testing.
+- **The Code Way (SDK):** Best for building apps.
 
-MOI simplifies this with **MAS0 (MOI Asset Standard 0)**. The SDK provides a universal class called `MAS0AssetLogic`. You can think of this as a remote. You don't need to know the specific code of the token; you just punch in the Asset ID, and this logic knows exactly how to format, sign, and broadcast standard actions like transfer, mint, or burn.
+### Method 1: The Visual Way (Voyage)
 
-### The "Three Steps" of a Transaction
+Before we write the code, let's create an asset manually so you can see how easy it is.
 
-When writing state to a blockchain, we always follow this pattern:
-1. **Initialize:** Create the logic object that links the Asset ID to your Wallet.
-2. **Send:** Ask the SDK to build the transaction, sign it with your key, and broadcast it to the network. This happens instantly.
-3. **Wait:** The transaction is floating in the mempool. We must wait for a validator to pick it up and add it to a block.
+1. Go to [Voyage Devnet](https://voyage.moi.technology) and connect your wallet.
+2. Open the **Playground** tab in the menu.
+3. Ensure "Devnet" is selected. Enter a Symbol (e.g., TEST) and a Supply (e.g., 1000).
+4. Click **Create**.
+5. Once confirmed, look at the "Submissions" box, click the hash, and find your **Asset ID** under the operations tab (starts with `0x...`). Copy this ID.
+
+### Method 2: The Code Way (SDK)
+
+In this mission, you'll:
+- Use your wallet as the signer (the creator).
+- Set your wallet identifier as the manager of the asset.
+- Create the asset with a symbol and supply.
+- Wait for confirmation and extract the newly created Asset ID.
+
+### The Code
+
+Update `src/lib/logic.js` with the function below:
+
+```javascript
+export async function createAsset(wallet, symbol, supply) {
+  // Manager is the wallet identifier (the controller of this asset)
+  const id = wallet.getIdentifier().toHex();
+
+  // Create MAS0 asset using a standard protocol operation
+  const response = await MAS0AssetLogic.create(
+    wallet,
+    symbol,
+    parseInt(supply),
+    id,
+    true // enableEvents
+  ).send();
+
+  // Wait for network confirmation
+  const receipt = await response.wait();
+
+  // Pull the result (SDK may return structured output here)
+  const result = await response.result();
+
+  // Extract Asset ID from result or fallback to receipt fields
+  const assetId = result?.asset_id || receipt?.operations?.[0]?.data?.asset_id;
+
+  return { hash: response.hash, receipt, assetId };
+}
+```
+
+---
+
+## Mission 4: Utilizing Assets (Transfer)
+
+**Goal:** Execute a transfer interaction using the asset you just created.
+
+### Understanding the Task
+
+Congratulations! You have successfully connected to the network (Mission 1), read your digital backpack (Mission 2), and created a brand new native asset (Mission 3).
+
+Now, the final step is to utilize that asset.
+
+The SDK provides a universal class called `MAS0AssetLogic`. Think of it as a universal remote control for Fungible Tokens. You simply punch in the Asset ID, and it gives you access to the entire standard protocol suite.
+
+**Capabilities include:**
+- **Core:** transfer, mint, burn
+- **Allowance:** approve, revoke
+- **Management:** lockup, release
+
+You can view the full list of methods in the [MAS0 Documentation](https://js-moi-sdk.docs.moi.technology/asset#).
 
 ### The Final Code
 
@@ -259,64 +380,38 @@ export async function transfer(wallet, assetId, receiverAddress, transferAmount)
   // 1. Initialize the Logic
   // We bind the Asset ID to the Wallet so the SDK knows WHO is signing
   const assetLogic = new MAS0AssetLogic(assetId, wallet);
-  
+
   // 2. Execute Transfer (Sign & Broadcast)
   // We use BigInt because token amounts are too large for standard JS numbers
   const transferResponse = await assetLogic.transfer(receiverAddress, BigInt(transferAmount)).send();
-  
+
   // 3. Await Consensus
   // The code pauses here until the network confirms the action
   const transactionReceipt = await transferResponse.wait();
-  
+
   return { hash: transferResponse.hash, receipt: transactionReceipt };
 }
 ```
 
 ---
 
-## Mission 4: Testing & Verification
+## Mission 5: Testing & Verification
 
 **Goal:** Validating the transfer function.
 
-To test a transfer, you need something to transfer! Since we haven't written a minting script yet, we will use the Voyage Explorer to simulate a real-world scenario where a user already owns assets (like having bought them on an exchange) and just wants to use your wallet to move them.
-
-### Step 1: Get Assets (The Visual Way)
-
-We will create a test token directly on the network using the official explorer.
-
-- **Access Voyage:** Go to [Voyage Devnet](https://voyage.moi.technology) and connect your IOMe wallet.
-- **Open Playground:** Navigate to the **Asset Playground** tab in the menu.
-- **Create Token:** Ensure "Devnet" is selected. Enter a Symbol (e.g., TEST) and a Supply (e.g., 1000), then click Create.
-- **Find the Asset ID:**
-  - Look at the "Submissions" box on the right side of the screen.
-  - Wait for your interaction to appear and click on the latest Interaction Hash.
-  - Scroll down to the Operations tab.
-  - Locate and Copy the Asset ID (it will look like a long alphanumeric string).
-
-**Note:** Voyage has many advanced capabilities for inspecting network state. We are using it here to demonstrate that for testing purposes, you truly need "no code" to get started.
-
-### Step 2: Verify "Read" Logic (The Backpack Check)
-
-Now that the asset exists on the network, we need to prove your application can "see" it.
-
-- **Refresh your DiApp:** Reload your local application.
-- **Check the List:** Look at the asset list generated by your `getAccountAssets` function (from Mission 2).
-- **Verification:**
-  - **Success:** You see TEST (or your symbol) with a balance of 1000 in the list. This confirms your app is correctly reading the global state.
-  - **Failure:** If the list is empty, check your console for errors or ensure your wallet address matches the one used on Voyage.
-
-### Step 3: Verify "Write" Logic (The Transfer)
+### Verify "Write" Logic (The Transfer)
 
 Finally, let's use your application to move these tokens.
 
-- **Initiate Transfer:** In your app's UI, select the new asset (or paste the Asset ID you copied).
-- **Set Recipient:** Enter a friend's address or a secondary wallet address you control.
-- **Send:** Click your Transfer button (triggering the logic from Mission 3).
-- **Confirm:** Sign the request in your wallet when prompted.
-- **Final Proof:**
-  - Copy the Transaction Hash returned by your app.
-  - Paste it into the search bar on Voyage.
-  - Verify that the "From" and "To" addresses match your request.
+1. **Initiate Transfer:** In your app's UI, select the new asset
+2. **Set Recipient:** Enter a friend's address or a secondary wallet address you control.
+3. **Send:** Click your Transfer button (triggering the logic from Mission 4).
+
+### Final Proof
+
+1. Copy the **Interaction Hash** returned by your app.
+2. Paste it into the search bar on [Voyage](https://voyage.moi.technology).
+3. Verify that the "From" and "To" addresses match your request.
 
 ---
 
@@ -327,13 +422,13 @@ Congratulations! You've built your first DiApp on MOI. You've learned:
 - How to connect to the MOI network
 - How to create wallets from mnemonics
 - How to read account state (TDU)
+- How to create native assets
 - How to transfer assets
 
 This foundation can be extended to build DEXs, NFT marketplaces, DeFi apps, and more on MOI.
 
 ## Resources
 
-- **JS-MOI-SDK Documentation:** js-moi-sdk.docs.moi.technology
-- **Voyage Explorer:** voyage.moi.technology
+- **JS-MOI-SDK Documentation:** https://js-moi-sdk.docs.moi.technology
+- **Voyage Explorer:** https://voyage.moi.technology
 - **Discord Community:** https://discord.gg/GkP7mDw5
-

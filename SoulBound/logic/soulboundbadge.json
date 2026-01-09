@@ -1,0 +1,216 @@
+{
+  "syntax": 1,
+  "engine": {
+    "kind": "PISA",
+    "flags": [],
+    "version": "0.5.0"
+  },
+  "kind": "asset",
+  "elements": [
+    {
+      "ptr": 0,
+      "kind": "literal",
+      "data": {
+        "type": "string",
+        "value": "0x064f6e6c792041646d696e2063616e2069737375652062616467657321"
+      }
+    },
+    {
+      "ptr": 1,
+      "kind": "literal",
+      "data": {
+        "type": "string",
+        "value": "0x065468697320617373657420697320536f756c626f756e6420616e642063616e6e6f74206265207472616e7366657272656421"
+      }
+    },
+    {
+      "ptr": 2,
+      "kind": "state",
+      "data": {
+        "mode": "logic",
+        "fields": [
+          {
+            "slot": 0,
+            "label": "admin",
+            "type": "identifier"
+          }
+        ]
+      }
+    },
+    {
+      "ptr": 3,
+      "deps": [
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "Init",
+        "mode": "dynamic",
+        "kind": "deploy",
+        "accepts": [],
+        "returns": [],
+        "executes": {
+          "bin": [
+            144,
+            0,
+            0,
+            132,
+            1,
+            155,
+            0,
+            1,
+            159,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 4,
+      "deps": [
+        0,
+        2
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "IssueBadge",
+        "mode": "dynamic",
+        "kind": "invoke",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "recipient",
+            "type": "identifier"
+          }
+        ],
+        "returns": [],
+        "executes": {
+          "bin": [
+            42,
+            0,
+            4,
+            144,
+            1,
+            0,
+            156,
+            0,
+            1,
+            158,
+            1,
+            132,
+            1,
+            70,
+            0,
+            1,
+            0,
+            17,
+            1,
+            11,
+            3,
+            1,
+            0,
+            17,
+            0,
+            0,
+            43,
+            0,
+            0,
+            6,
+            0,
+            1,
+            10,
+            0,
+            42,
+            1,
+            5,
+            4,
+            2,
+            0,
+            42,
+            3,
+            5,
+            112,
+            3,
+            10,
+            4,
+            13,
+            3,
+            3,
+            19,
+            4,
+            84,
+            4,
+            3,
+            0,
+            85,
+            0,
+            0,
+            1,
+            85,
+            0,
+            1,
+            2,
+            85,
+            0,
+            2,
+            4,
+            160,
+            1,
+            13,
+            0,
+            1,
+            2,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 5,
+      "deps": [
+        1
+      ],
+      "kind": "callable",
+      "data": {
+        "name": "Transfer",
+        "mode": "static",
+        "kind": "invoke",
+        "accepts": [
+          {
+            "slot": 0,
+            "label": "beneficiary",
+            "type": "identifier"
+          },
+          {
+            "slot": 1,
+            "label": "amount",
+            "type": "u256"
+          }
+        ],
+        "returns": [],
+        "executes": {
+          "bin": [
+            17,
+            0,
+            1,
+            43,
+            0,
+            0,
+            6,
+            0
+          ]
+        },
+        "catches": []
+      }
+    },
+    {
+      "ptr": 6,
+      "kind": "asset",
+      "data": {
+        "engine": "1.0.0"
+      }
+    }
+  ]
+}

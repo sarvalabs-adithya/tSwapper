@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "js-moi-sdk": "^0.7.0-rc1",
+    "js-moi-sdk": "^0.7.0-rc3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
