@@ -1,0 +1,103 @@
+coco SimpleSwap
+
+// ─────────────────────────────────────────────────────────────
+// STATE: Configuration and statistics stored on-chain
+// ─────────────────────────────────────────────────────────────
+state logic:
+    rate U64              // Exchange rate: 1 moiBTC = rate moiUSD
+    owner Identifier      // Pool owner (can update rate)
+    asset_a Identifier    // moiBTC asset ID
+    asset_b Identifier    // moiUSD asset ID
+    total_swaps U64       // Counter: how many swaps executed
+    volume_a U256         // Total moiBTC volume traded
+    volume_b U256         // Total moiUSD volume traded
+
+// ─────────────────────────────────────────────────────────────
+// EVENTS: Emitted on every swap (for indexing and tracking)
+// ─────────────────────────────────────────────────────────────
+event SwapExecuted:
+    topic user Identifier      // Who made the swap
+    topic direction U64        // 0 = moiBTC→moiUSD, 1 = moiUSD→moiBTC
+    field amount_in U256       // How much they sent
+    field amount_out U256      // How much they received
+
+// ─────────────────────────────────────────────────────────────
+// DEPLOY: Initialize the contract with rate and asset IDs
+// ─────────────────────────────────────────────────────────────
+endpoint deploy Init(initial_rate U64, token_a Identifier, token_b Identifier):
+    mutate initial_rate -> SimpleSwap.Logic.rate
+    mutate Sender -> SimpleSwap.Logic.owner
+    mutate token_a -> SimpleSwap.Logic.asset_a
+    mutate token_b -> SimpleSwap.Logic.asset_b
+    mutate 0 -> SimpleSwap.Logic.total_swaps
+    mutate U256(0) -> SimpleSwap.Logic.volume_a
+    mutate U256(0) -> SimpleSwap.Logic.volume_b
+
+// ─────────────────────────────────────────────────────────────
+// SWAP moiBTC → moiUSD: Record the swap and update stats
+// ─────────────────────────────────────────────────────────────
+endpoint dynamic SwapAtoB(amount_in U256) -> (amount_out U256):
+    memory current_rate U64
+    observe current_rate <- SimpleSwap.Logic.rate
+    memory calc_out U256 = amount_in * U256(current_rate)
+    memory swaps U64
+    memory vol_a U256
+    observe swaps <- SimpleSwap.Logic.total_swaps
+    observe vol_a <- SimpleSwap.Logic.volume_a
+    mutate swaps + 1 -> SimpleSwap.Logic.total_swaps
+    mutate vol_a + amount_in -> SimpleSwap.Logic.volume_a
+    emit SwapExecuted{
+        user: Sender,
+        direction: 0,
+        amount_in: amount_in,
+        amount_out: calc_out
+    }
+    yield amount_out calc_out
+
+// ─────────────────────────────────────────────────────────────
+// SWAP moiUSD → moiBTC: Record the reverse swap
+// ─────────────────────────────────────────────────────────────
+endpoint dynamic SwapBtoA(amount_in U256) -> (amount_out U256):
+    memory current_rate U64
+    observe current_rate <- SimpleSwap.Logic.rate
+    memory calc_out U256 = amount_in / U256(current_rate)
+    memory swaps U64
+    memory vol_b U256
+    observe swaps <- SimpleSwap.Logic.total_swaps
+    observe vol_b <- SimpleSwap.Logic.volume_b
+    mutate swaps + 1 -> SimpleSwap.Logic.total_swaps
+    mutate vol_b + amount_in -> SimpleSwap.Logic.volume_b
+    emit SwapExecuted{
+        user: Sender,
+        direction: 1,
+        amount_in: amount_in,
+        amount_out: calc_out
+    }
+    yield amount_out calc_out
+
+// ─────────────────────────────────────────────────────────────
+// VIEW: Read-only queries (no state changes)
+// ─────────────────────────────────────────────────────────────
+endpoint GetRate() -> (rate U64):
+    observe rate <- SimpleSwap.Logic.rate
+
+endpoint GetPoolInfo() -> (asset_a Identifier, asset_b Identifier, rate U64, owner Identifier):
+    observe asset_a <- SimpleSwap.Logic.asset_a
+    observe asset_b <- SimpleSwap.Logic.asset_b
+    observe rate <- SimpleSwap.Logic.rate
+    observe owner <- SimpleSwap.Logic.owner
+
+endpoint GetStats() -> (total_swaps U64, volume_a U256, volume_b U256):
+    observe total_swaps <- SimpleSwap.Logic.total_swaps
+    observe volume_a <- SimpleSwap.Logic.volume_a
+    observe volume_b <- SimpleSwap.Logic.volume_b
+
+// ─────────────────────────────────────────────────────────────
+// ADMIN: Only the owner can update the exchange rate
+// ─────────────────────────────────────────────────────────────
+endpoint dynamic SetRate(new_rate U64):
+    memory admin Identifier
+    observe admin <- SimpleSwap.Logic.owner
+    if Sender != admin:
+        throw "Only owner can update rate"
+    mutate new_rate -> SimpleSwap.Logic.rate

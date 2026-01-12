@@ -1,13 +1,6 @@
-# tSwap
+# tSwap - Your First DiApp on MOI
 
-A client-side React application for transferring assets on the MOI Network.
-
-## Features
-
-- 🔐 **Wallet Login** - Connect using mnemonic phrase with customizable HD path
-- 💰 **Asset Browser** - View all your assets with symbols and balances via TDU
-- 📤 **Token Transfer** - Send assets to any address on the MOI network
-- 🎨 **Modern UI** - Clean, dark-themed interface
+A tutorial project for learning MOI Native Assets through hands-on missions.
 
 ## Quick Start
 
@@ -15,75 +8,65 @@ A client-side React application for transferring assets on the MOI Network.
 # Install dependencies
 npm install
 
-# Run dev server
+# Start development server
 npm run dev
-
-# Build for production
-npm run build
 ```
 
-## Prerequisites
+## Tutorial
 
-- Node.js v18+
-- A MOI wallet with devnet tokens
-- Your wallet mnemonic phrase
+See [TUTORIAL.md](./TUTORIAL.md) for the complete step-by-step guide.
+
+## Mission Overview
+
+| Mission | Goal |
+|---------|------|
+| **Mission 1** | Connect to MOI network & create wallet |
+| **Mission 2** | Read account assets using TDU |
+| **Mission 3** | Create moiBTC and moiUSD tokens |
+| **Mission 4** | Transfer tokens between wallets |
+| **Mission 5** | Verify transactions on Voyage |
+| **Mission 6** | Build a Soulbound Token with Coco |
+| **Mission 7** | Build SimpleSwap using your tokens! |
 
 ## Project Structure
 
 ```
-tswap/
+tSwap/
 ├── src/
-│   ├── lib/logic.js      # MOI SDK wrapper (TODO: Implement the functions)
-│   ├── App.jsx           # Main React app
-│   └── index.css         # Styles
-├── TUTORIAL.md           # Complete step-by-step tutorial
-└── package.json
+│   ├── lib/
+│   │   └── logic.js      # TODO: Implement the missions here!
+│   ├── App.jsx           # Frontend (ready to use)
+│   ├── index.css         # Styles
+│   └── main.jsx          # Entry point
+├── Swap/
+│   ├── SimpleSwap.coco   # Mission 7: Swap contract
+│   ├── deploy.js         # Mission 7: Deployment script
+│   └── coco.nut          # Coco config
+├── SoulBound/
+│   ├── logic/
+│   │   └── SoulboundBadge.coco  # Mission 6: SBT contract
+│   └── deploy.js         # Mission 6: Deployment script
+└── TUTORIAL.md           # Full tutorial guide
 ```
 
-## How It Works
+## Prerequisites
 
-All wallet operations happen **in the browser** — no server needed.
+- Node.js v16+
+- [IOMe Wallet](https://voyage.moi.technology) - Generate and fund your wallet
+- [Coco CLI](https://cocolang.dev) - For compiling contracts (Missions 6-7)
 
-1. **Login** → Enter mnemonic → wallet created client-side
-2. **Load Assets** → Query MOI RPC for TDU (Total Digital Utility)
-3. **Select Asset** → Choose from dropdown with symbols
-4. **Transfer** → Sign transaction in browser → broadcast to network
+## Resources
 
-## Learning Path
+- [JS-MOI-SDK Documentation](https://js-moi-sdk.docs.moi.technology)
+- [Coco Language](https://cocolang.dev)
+- [Voyage Explorer](https://voyage.moi.technology)
+- [Discord Community](https://discord.gg/GkP7mDw5)
 
-This is a **learning scaffold** with TODO placeholders. 
+## Branches
 
-**👉 Start here:** Navigate to `src/lib/logic.js` to begin implementing the blockchain logic.
-
-Your mission is to implement the functions in `src/lib/logic.js`:
-
-- **Mission 1:** Connection & Identity (`createWallet`)
-- **Mission 2:** Reading State (`getAccountAssets`)
-- **Mission 3:** Writing State (`transfer`)
-
-👉 **See [TUTORIAL.md](./TUTORIAL.md) for the complete step-by-step guide**
-
-## Security
-
-✅ Mnemonic never leaves the browser  
-✅ No server-side storage  
-✅ Direct connection to MOI RPC
-
-## Network
-
-Currently connects to MOI Devnet:
-```
-https://dev.voyage-rpc.moi.technology/devnet
-```
-
-Edit `src/lib/logic.js` to change networks.
-
-## Documentation
-
-- **[TUTORIAL.md](./TUTORIAL.md)** - Complete developer guide with missions
-- **MOI SDK Docs:** js-moi-sdk.docs.moi.technology
-- **Voyage Explorer:** voyage.moi.technology
+- `main` - Scaffold with TODO functions (start here!)
+- `solution` - Complete implementation
 
 ## License
 
-ISC
+MIT

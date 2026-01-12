@@ -1,8 +1,6 @@
 import { Wallet, JsonRpcProvider, MAS0AssetLogic } from 'js-moi-sdk';
 
 // Initialize Network Provider (Voyage Devnet)
-// We define this globally so other functions can use it later
-// This is part of Mission 1 - you'll learn about providers there
 const provider = new JsonRpcProvider('https://dev.voyage-rpc.moi.technology/devnet');
 
 // ============================================
@@ -11,32 +9,16 @@ const provider = new JsonRpcProvider('https://dev.voyage-rpc.moi.technology/devn
 // Goal: Initialize the Network Provider and the Wallet Signer.
 //
 // Understanding the Task:
-// To interact with the MOI network, we need two components working together:
-// 1. Provider - acts as our connection to the blockchain node (allows us to read data)
-// 2. Wallet - holds our private keys and allows us to sign transactions (write data)
-//
-// If you look at the official documentation for creating a wallet, you'll find the Wallet class.
-// Specifically, we want to create a wallet from a recovery phrase, so we look for the
-// fromMnemonic method. This method requires two arguments:
-// - Your 12-word mnemonic string
-// - A "derivation path"
-//
-// When creating a wallet, we must specify a derivation path. Think of this as a directory
-// structure for your keys; m/44'/6174'/7020'/0/0 points to your first account (Index 0).
-// If you changed the final digit to 1, you would generate a completely different address
-// from the same mnemonic.
-//
-// Finally, a wallet by itself is just a key pair sitting in memory. To make it useful,
-// we have to connect it to our provider. This binds the network connection to the signer,
-// allowing the wallet to automatically fetch its own nonce and broadcast transactions.
+// To interact with the MOI network, we need two components:
+// 1. Provider - connection to the blockchain node (read data)
+// 2. Wallet - holds private keys (write data)
 //
 // Steps to implement:
-// 1. Uncomment the provider line above (it's already defined for you)
-// 2. Define standard MOI derivation path: "m/44'/6174'/7020'/0/0"
-// 3. Create Wallet instance from mnemonic using Wallet.fromMnemonic()
-// 4. Attach provider to enable network IO using wallet.connect()
-// 5. Extract address from wallet object (check wallet.address, wallet.identifier?.toHex(), or wallet.getIdentifier()?.toHex())
-// 6. Return an object with both wallet and address: { wallet, address }
+// 1. Define standard MOI derivation path: "m/44'/6174'/7020'/0/0"
+// 2. Create Wallet instance from mnemonic using Wallet.fromMnemonic()
+// 3. Connect wallet to provider using wallet.connect()
+// 4. Extract address from wallet object
+// 5. Return { wallet, address }
 //
 // TODO: Implement the function below
 export async function createWallet(mnemonic) {
@@ -44,11 +26,12 @@ export async function createWallet(mnemonic) {
   
   // TODO: Create Wallet instance from mnemonic
   
-  // TODO: Attach provider to enable network IO
+  // TODO: Connect wallet to provider
   
   // TODO: Extract address from wallet object
   
-  // TODO: Return an object with both wallet and address: { wallet, address }
+  // TODO: Return { wallet, address }
+  
   throw new Error('Mission 1: Not implemented yet - Complete the createWallet function');
 }
 
@@ -58,86 +41,131 @@ export async function createWallet(mnemonic) {
 // Goal: Retrieve the account's complete asset portfolio in one query.
 //
 // Understanding the Task:
-// In traditional blockchains like Ethereum, your wallet is actually kind of "blind."
-// It doesn't know what tokens you own. To find out, it has to go visit every single
-// Token Contract individually and ask, "Does this person have a balance here?" It's inefficient.
-//
-// MOI is Participant-Centric. Think of your account like a digital backpack.
-// The network tracks exactly what is inside it. We call this the TDU (Total Digital Utility).
+// MOI is Participant-Centric. Your account is like a digital backpack.
+// The network tracks what's inside using TDU (Total Digital Utility).
 //
 // Steps to implement:
-// 1. Query the Account State directly using provider.getTDU(address)
-// 2. Guard Rail: If the user is new, the TDU might be null or not an array - return null
-// 3. For each asset entry, fetch its metadata using provider.getAssetInfoByAssetID()
-// 4. Use Promise.all() to fetch multiple asset infos in parallel (efficient!)
-// 5. Format each asset with: id, balance (as string), and symbol
-// 6. Guard Rail: If fetching metadata fails for an asset, don't crash!
-//    Return the asset anyway, just without a symbol (or with "UNK")
-//
-// What is happening here?
-// - We use Promise.all because we are firing off multiple queries at once (one for each asset)
-// - We convert the balance to a string because JavaScript struggles with the massive numbers blockchains use
+// 1. Query using provider.getTDU(address)
+// 2. Guard: If null or not array, return null
+// 3. For each asset, fetch metadata with provider.getAssetInfoByAssetID()
+// 4. Use Promise.all() for parallel fetching
+// 5. Return array of { id, balance (as string), symbol }
 //
 // TODO: Implement the function below
 export async function getAccountAssets(address) {
   // TODO: Query the Account State directly
   
-  // TODO: Guard Rail 1 - If the user is new, stop here
+  // TODO: Guard Rail - If the user is new, return null
   
-  // TODO: Loop through every asset to find its human-readable Symbol
+  // TODO: Loop through assets with Promise.all
   
-  // For each asset entry:
-  //   TODO: Try to fetch the symbol using provider.getAssetInfoByAssetID(entry.asset_id)
-  //   TODO: Return formatted object: { id, balance: BigInt(entry.amount).toString(), symbol }
-  //   TODO: Guard Rail 2 - If metadata fetch fails, catch and return asset without symbol
+  // TODO: For each asset, fetch symbol and format response
   
   throw new Error('Mission 2: Not implemented yet - Complete the getAccountAssets function');
 }
 
 // ============================================
-// Mission 3: Writing State (Transfer)
+// Mission 3: Creating moiBTC and moiUSD
 // ============================================
-// Goal: Execute an asset transfer.
+// Goal: Create native MAS0 assets that you'll use in Mission 7 (SimpleSwap)!
 //
 // Understanding the Task:
-// In most blockchains, to interact with a token, you need two things:
-// - The Contract Address
-// - The ABI (The specific code interface for that contract)
+// On MOI, assets are native - no smart contract needed!
+// You'll create two tokens:
+// - moiBTC (supply: 1,000)
+// - moiUSD (supply: 100,000,000)
 //
-// If you lose the ABI, you can't talk to the contract. It's like trying to make a phone call
-// without knowing the language the other person speaks.
-//
-// MOI simplifies this with MAS0 (MOI Asset Standard 0). The SDK provides a universal class
-// called MAS0AssetLogic. You can think of this as a remote. You don't need to know the specific
-// code of the token; you just punch in the Asset ID, and this logic knows exactly how to format,
-// sign, and broadcast standard actions like transfer, mint, or burn.
-//
-// The "Three Steps" of a Transaction:
-// When writing state to a blockchain, we always follow this pattern:
-// 1. Initialize: Create the logic object that links the Asset ID to your Wallet
-// 2. Send: Ask the SDK to build the transaction, sign it with your key, and broadcast it to the network
-// 3. Wait: The transaction is floating in the mempool. We must wait for a validator to pick it up
-//    and add it to a block.
+// Save the Asset IDs! You'll need them for Mission 7.
 //
 // Steps to implement:
-// 1. Initialize the Logic - Create MAS0AssetLogic(assetId, wallet)
-//    This binds the Asset ID to the Wallet so the SDK knows WHO is signing
-// 2. Execute Transfer - Call .transfer(receiverAddress, BigInt(transferAmount)).send()
-//    We use BigInt because token amounts are too large for standard JS numbers
-//    This signs & broadcasts the transaction instantly
-// 3. Await Consensus - Call .wait() on the response
-//    The code pauses here until the network confirms the action
-// 4. Return the transaction hash and receipt
+// 1. Get manager address: wallet.getIdentifier().toHex()
+// 2. Create asset: MAS0AssetLogic.create(wallet, symbol, supply, manager, true).send()
+// 3. Wait for confirmation: response.wait()
+// 4. Get result: response.result()
+// 5. Extract assetId from result
+// 6. Mint supply to manager: new MAS0AssetLogic(assetId, wallet).mint(manager, BigInt(supply)).send()
+// 7. Return { hash, receipt, assetId }
+//
+// TODO: Implement the function below
+export async function createAsset(wallet, symbol, supply) {
+  // TODO: Get manager address (wallet identifier)
+  
+  // TODO: Create MAS0 asset
+  
+  // TODO: Wait for confirmation
+  
+  // TODO: Extract Asset ID from result
+  
+  // TODO: Mint supply to the creator
+  
+  // TODO: Return { hash, receipt, assetId }
+  
+  throw new Error('Mission 3: Not implemented yet - Complete the createAsset function');
+}
+
+// ============================================
+// Mission 4: Utilizing Assets (Transfer)
+// ============================================
+// Goal: Transfer your moiBTC and moiUSD tokens.
+//
+// Understanding the Task:
+// MAS0AssetLogic is like a universal remote for fungible tokens.
+// This same transfer function will be REUSED in Mission 7 for swaps!
+//
+// Steps to implement:
+// 1. Create MAS0AssetLogic instance: new MAS0AssetLogic(assetId, wallet)
+// 2. Execute transfer: assetLogic.transfer(receiver, BigInt(amount)).send()
+// 3. Wait for confirmation: response.wait()
+// 4. Return { hash, receipt }
 //
 // TODO: Implement the function below
 export async function transfer(wallet, assetId, receiverAddress, transferAmount) {
-  // TODO: Initialize the Logic
+  // TODO: Initialize the Logic (bind Asset ID to Wallet)
   
-  // TODO: Execute Transfer (Sign & Broadcast)
+  // TODO: Execute Transfer (use BigInt for amount!)
   
   // TODO: Await Consensus
   
-  // TODO: Return hash and receipt
+  // TODO: Return { hash, receipt }
   
-  throw new Error('Mission 3: Not implemented yet - Complete the transfer function');
+  throw new Error('Mission 4: Not implemented yet - Complete the transfer function');
 }
+
+// ============================================
+// Mission 7: SimpleSwap Configuration
+// ============================================
+// After completing Missions 3-4 and deploying the SimpleSwap contract,
+// fill in these values from the deploy.js output.
+//
+// This config connects your frontend to:
+// - The moiBTC and moiUSD you created in Mission 3
+// - The SimpleSwap contract you deploy in Mission 7
+// - The pool owner wallet that holds liquidity
+//
+// TODO: Update these values after running Swap/deploy.js
+export const SWAP_CONFIG = {
+  // TODO: Fill in after deploying SimpleSwap contract
+  LOGIC_ID: "",
+  
+  // TODO: Fill in with pool owner address
+  POOL_OWNER: "",
+  
+  // TODO: Fill in with moiBTC asset ID from Mission 3
+  moiBTC: {
+    id: "",
+    symbol: "moiBTC",
+    decimals: 0,
+    icon: "₿"
+  },
+  
+  // TODO: Fill in with moiUSD asset ID from Mission 3
+  moiUSD: {
+    id: "",
+    symbol: "moiUSD",
+    decimals: 0,
+    icon: "$"
+  },
+  
+  // Exchange rate: 1 moiBTC = 50,000 moiUSD
+  RATE: 50000
+};
