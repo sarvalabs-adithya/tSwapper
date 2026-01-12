@@ -1,0 +1,60 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Mission 6: Soulbound Badge Contract
+// ═══════════════════════════════════════════════════════════════════════════
+// 
+// Goal: Create a "Soulbound" token that CANNOT be transferred.
+// Once issued to a user, it stays in their wallet forever.
+//
+// Key Concepts:
+// - Use "coco asset" to make this a native asset
+// - Override the Transfer endpoint to block all transfers
+// - Only admin can issue new badges
+//
+// What you need to implement:
+// 1. STATE - Store the admin address
+// 2. DEPLOY - Set Sender as admin
+// 3. MINT - IssueBadge function (admin only)
+// 4. TRANSFER - Override to throw error (makes it soulbound!)
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
+// TODO: Start with "coco asset SoulboundBadge" to make this a native asset
+
+
+// ─────────────────────────────────────────────────────────────
+// TODO: Define the STATE
+// ─────────────────────────────────────────────────────────────
+// Store the admin address who can issue badges
+
+// state logic:
+//     TODO: Add admin (Identifier)
+
+
+// ─────────────────────────────────────────────────────────────
+// TODO: DEPLOY - Initialize the contract
+// ─────────────────────────────────────────────────────────────
+// Set Sender as the admin
+
+// endpoint deploy Init():
+//     TODO: Set Sender as admin
+
+
+// ─────────────────────────────────────────────────────────────
+// TODO: IssueBadge - Only admin can mint badges
+// ─────────────────────────────────────────────────────────────
+// 1. Read admin from state
+// 2. Check if Sender == admin, throw if not
+// 3. Mint 1 badge to recipient using: asset.Mint(token_id: 0, beneficiary: recipient, amount: U256(1))
+
+// endpoint dynamic IssueBadge(recipient Identifier):
+//     TODO: Implement admin check and minting
+
+
+// ─────────────────────────────────────────────────────────────
+// TODO: Transfer - Override to make soulbound
+// ─────────────────────────────────────────────────────────────
+// This is the key! By defining Transfer and making it throw,
+// we block ALL transfers of this token.
+
+// endpoint Transfer(beneficiary Identifier, amount U256):
+//     TODO: Throw an error like "This asset is Soulbound and cannot be transferred!"
