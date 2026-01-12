@@ -844,6 +844,35 @@ export async function executeSwap(userWallet, inputToken, inputAmount) {
 - Implement **staking** with the lockup/release operations
 - Explore **agentic AI** integrations
 
+---
+
+## 💡 A Note on Architecture
+
+**You don't actually need a smart contract to build a swap.**
+
+Everything in Mission 7 could be accomplished with just two `transfer()` calls:
+1. User sends moiBTC → Pool Owner
+2. Pool Owner sends moiUSD → User
+
+That's it. Pure native asset transfers. No Coco required.
+
+**So why did we include SimpleSwap.coco?**
+
+To teach you **Hybrid Architecture** — the ability to combine:
+- **Native Operations** (fast, simple, protocol-level)
+- **Custom Logic** (flexibility, on-chain state, events)
+
+In production apps, you'll often want:
+- **Transparency**: On-chain events (`SwapExecuted`) for indexers and UIs
+- **Stats Tracking**: `total_swaps`, `volume_a`, `volume_b` stored on-chain
+- **Admin Controls**: `SetRate` for governance
+
+This pattern — native transfers for speed, contracts for coordination — is the sweet spot for building on MOI.
+
+**Remember:** Start simple with native assets. Add custom logic only when you need it.
+
+---
+
 ## Resources
 
 - **JS-MOI-SDK Documentation:** https://js-moi-sdk.docs.moi.technology

@@ -1,89 +1,95 @@
 /**
- * SimpleSwap - Single Deployment Script
+ * SimpleSwap - Full Deployment Script
  * 
  * This script:
- * 1. Creates moiBTC and moiUSD assets (if needed)
- * 2. Deploys the SimpleSwap contract
- * 3. Outputs all the IDs for the frontend
+ * 1. Creates moiBTC and moiUSD assets (or uses existing ones from .env)
+ * 2. Mints them to the pool owner
+ * 3. Deploys the SimpleSwap contract
+ * 4. Outputs the SWAP_CONFIG for your frontend
+ * 
+ * Prerequisites:
+ * 1. Copy .env.example to .env and fill in your mnemonic
+ * 2. Compile the contract: coco compile SimpleSwap.coco --format json
  * 
  * Run: NODE_TLS_REJECT_UNAUTHORIZED=0 node deploy.js
  */
 
+import 'dotenv/config';
 import { Wallet, JsonRpcProvider, MAS0AssetLogic, LogicFactory } from 'js-moi-sdk';
 import manifest from './simpleswap.json' with { type: 'json' };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CONFIGURATION
+// CONFIGURATION - Loaded from .env file (with fallbacks for demo)
 // ═══════════════════════════════════════════════════════════════════════════
-const MNEMONIC = "fortune toddler true say guilt vacant retire lion luxury come wagon pulp";
-const RPC_URL = "https://dev.voyage-rpc.moi.technology/devnet";
 
-// Set to true to create fresh tokens, false to use existing ones
-// For tutorial: set to true to see the full asset creation flow
-const CREATE_NEW_TOKENS = true;
+const MNEMONIC = process.env.POOL_OWNER_MNEMONIC || "fortune toddler true say guilt vacant retire lion luxury come wagon pulp";
+const RPC_URL = process.env.RPC_URL || "https://dev.voyage-rpc.moi.technology/devnet";
+const RATE = parseInt(process.env.SWAP_RATE) || 50000;
 
-// Existing token IDs (if CREATE_NEW_TOKENS = false)
-const EXISTING_moiBTC = "0x10030000eb02d2115f16899ad2a43147893f51868eb8683c7ea6a89d00000000";
-const EXISTING_moiUSD = "0x100300003afd81730f00c0c4522ae4736028c700e54875f4f20ed3ff00000000";
+// If you already created tokens in Mission 3, set these in .env
+const EXISTING_moiBTC = process.env.MOIBTC_ASSET_ID || "";
+const EXISTING_moiUSD = process.env.MOIUSD_ASSET_ID || "";
 
-// Exchange rate: 1 moiBTC = 50,000 moiUSD
-const RATE = 50000;
+// Set to false if you want to use existing tokens from Mission 3
+const CREATE_NEW_TOKENS = !EXISTING_moiBTC || !EXISTING_moiUSD;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MAIN
+// MAIN DEPLOYMENT
 // ═══════════════════════════════════════════════════════════════════════════
 async function deploy() {
     console.log("═══════════════════════════════════════════════════════");
-    console.log("  SimpleSwap - Deployment");
+    console.log("  SimpleSwap - Full Deployment");
     console.log("═══════════════════════════════════════════════════════\n");
     
-    // Connect wallet (used for everything - token creation, deployment, and as contract owner)
+    // Connect wallet
     const provider = new JsonRpcProvider(RPC_URL);
     const wallet = await Wallet.fromMnemonic(MNEMONIC, "m/44'/6174'/7020'/0/0");
     wallet.connect(provider);
     
     const ownerAddress = wallet.getIdentifier().toHex();
-    console.log(`👛 Wallet: ${ownerAddress}`);
+    console.log(`👛 Pool Owner: ${ownerAddress}`);
     console.log(`   🔗 View on Voyage: https://voyage.moi.technology/account/${ownerAddress}\n`);
     
     let moiBTC_ID, moiUSD_ID;
     
-    // ─────────────────────────────────────────────────────────────────────────
-    // STEP 1: Create or use existing tokens
-    // ─────────────────────────────────────────────────────────────────────────
     if (CREATE_NEW_TOKENS) {
-        console.log("📦 Creating tokens...");
-        
-        // Create moiBTC
-        console.log("   Creating moiBTC (supply: 1,000)...");
-        const btcResponse = await MAS0AssetLogic.create(wallet, "moiBTC", 1000, ownerAddress, true).send();
-        const btcReceipt = await btcResponse.wait();
+        // ─────────────────────────────────────────────────────────────────────
+        // STEP 1: Create moiBTC
+        // ─────────────────────────────────────────────────────────────────────
+        console.log("📦 Creating moiBTC (supply: 1,000)...");
+        const btcResponse = await MAS0AssetLogic.create(
+            wallet, "moiBTC", 1000, ownerAddress, true
+        ).send();
+        await btcResponse.wait();
         const btcResult = await btcResponse.result();
-        moiBTC_ID = btcResult?.asset_id || btcReceipt?.ix_operations?.[0]?.data?.asset_id;
+        moiBTC_ID = btcResult?.asset_id;
         
-        // Mint moiBTC to owner
-        if (moiBTC_ID) {
-            const btcLogic = new MAS0AssetLogic(moiBTC_ID, wallet);
-            await (await btcLogic.mint(ownerAddress, BigInt(1000)).send()).wait();
-        }
+        // Mint to pool owner
+        const btcLogic = new MAS0AssetLogic(moiBTC_ID, wallet);
+        await (await btcLogic.mint(ownerAddress, BigInt(1000)).send()).wait();
         console.log(`   ✅ moiBTC: ${moiBTC_ID}`);
+        console.log(`   💰 Minted 1,000 moiBTC to pool\n`);
         
-        // Create moiUSD
-        console.log("   Creating moiUSD (supply: 100,000,000)...");
-        const usdResponse = await MAS0AssetLogic.create(wallet, "moiUSD", 100000000, ownerAddress, true).send();
-        const usdReceipt = await usdResponse.wait();
+        // ─────────────────────────────────────────────────────────────────────
+        // STEP 2: Create moiUSD
+        // ─────────────────────────────────────────────────────────────────────
+        console.log("📦 Creating moiUSD (supply: 100,000,000)...");
+        const usdResponse = await MAS0AssetLogic.create(
+            wallet, "moiUSD", 100000000, ownerAddress, true
+        ).send();
+        await usdResponse.wait();
         const usdResult = await usdResponse.result();
-        moiUSD_ID = usdResult?.asset_id || usdReceipt?.ix_operations?.[0]?.data?.asset_id;
+        moiUSD_ID = usdResult?.asset_id;
         
-        // Mint moiUSD to owner
-        if (moiUSD_ID) {
-            const usdLogic = new MAS0AssetLogic(moiUSD_ID, wallet);
-            await (await usdLogic.mint(ownerAddress, BigInt(100000000)).send()).wait();
-        }
-        console.log(`   ✅ moiUSD: ${moiUSD_ID}\n`);
+        // Mint to pool owner
+        const usdLogic = new MAS0AssetLogic(moiUSD_ID, wallet);
+        await (await usdLogic.mint(ownerAddress, BigInt(100000000)).send()).wait();
+        console.log(`   ✅ moiUSD: ${moiUSD_ID}`);
+        console.log(`   💰 Minted 100,000,000 moiUSD to pool\n`);
         
     } else {
-        console.log("📦 Using existing tokens...");
+        // Use existing tokens from Mission 3 (loaded from .env)
+        console.log("📦 Using existing tokens from .env...");
         moiBTC_ID = EXISTING_moiBTC;
         moiUSD_ID = EXISTING_moiUSD;
         console.log(`   moiBTC: ${moiBTC_ID}`);
@@ -91,22 +97,16 @@ async function deploy() {
     }
     
     // ─────────────────────────────────────────────────────────────────────────
-    // STEP 2: Deploy SimpleSwap contract
-    // The contract owner will be the wallet address (Sender in the contract)
+    // STEP 3: Deploy SimpleSwap Contract
     // ─────────────────────────────────────────────────────────────────────────
     console.log("📝 Deploying SimpleSwap contract...");
     console.log(`   Rate: 1 moiBTC = ${RATE.toLocaleString()} moiUSD`);
-    console.log(`   Contract Owner: ${ownerAddress}`);
     
     const factory = new LogicFactory(manifest, wallet);
     const response = await factory.deploy("Init", RATE, moiBTC_ID, moiUSD_ID);
     const receipt = await response.wait();
+    
     const logicId = receipt.ix_operations?.[0]?.data?.logic_id;
-    
-    if (receipt.status !== 0) {
-        throw new Error(`Deploy failed with status ${receipt.status}`);
-    }
-    
     console.log(`   ✅ Logic ID: ${logicId}\n`);
     
     // ─────────────────────────────────────────────────────────────────────────
@@ -138,9 +138,20 @@ export const SWAP_CONFIG = {
 `);
     
     console.log(`
-🔗 View Contract Deployment: https://voyage.moi.technology/interaction/${response.hash}
-🔗 View Contract Owner Wallet: https://voyage.moi.technology/account/${ownerAddress}
-🔗 View Contract Logic: https://voyage.moi.technology/logic/${logicId}
+📝 Update your .env with these values:
+
+POOL_OWNER_ADDRESS=${ownerAddress}
+MOIBTC_ASSET_ID=${moiBTC_ID}
+MOIUSD_ASSET_ID=${moiUSD_ID}
+SWAP_LOGIC_ID=${logicId}
+`);
+    
+    console.log(`
+🔗 View on Voyage:
+   Pool Owner: https://voyage.moi.technology/account/${ownerAddress}
+   moiBTC: https://voyage.moi.technology/asset/${moiBTC_ID}
+   moiUSD: https://voyage.moi.technology/asset/${moiUSD_ID}
+   Contract: https://voyage.moi.technology/logic/${logicId}
 `);
 }
 
