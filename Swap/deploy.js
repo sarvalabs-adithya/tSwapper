@@ -2,39 +2,36 @@
  * SimpleSwap - Full Deployment Script
  * 
  * This script:
- * 1. Creates moiBTC and moiUSD assets (or uses existing ones)
+ * 1. Creates moiBTC and moiUSD assets (or uses existing ones from .env)
  * 2. Mints them to the pool owner
  * 3. Deploys the SimpleSwap contract
  * 4. Outputs the SWAP_CONFIG for your frontend
  * 
  * Prerequisites:
- * 1. Compile the contract: coco compile SimpleSwap.coco --format json
- * 2. Update MNEMONIC below with your pool owner's mnemonic
+ * 1. Copy .env.example to .env and fill in your mnemonic
+ * 2. Compile the contract: coco compile SimpleSwap.coco --format json
  * 
  * Run: NODE_TLS_REJECT_UNAUTHORIZED=0 node deploy.js
  */
 
+import 'dotenv/config';
 import { Wallet, JsonRpcProvider, MAS0AssetLogic, LogicFactory } from 'js-moi-sdk';
 import manifest from './simpleswap.json' with { type: 'json' };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CONFIGURATION - UPDATE THESE VALUES
+// CONFIGURATION - Loaded from .env file
 // ═══════════════════════════════════════════════════════════════════════════
 
-// TODO: Replace with your mnemonic (this wallet becomes the pool owner)
-const MNEMONIC = "your twelve word mnemonic phrase here";
+const MNEMONIC = process.env.POOL_OWNER_MNEMONIC || "your twelve word mnemonic phrase here";
+const RPC_URL = process.env.RPC_URL || "https://dev.voyage-rpc.moi.technology/devnet";
+const RATE = parseInt(process.env.SWAP_RATE) || 50000;
 
-const RPC_URL = "https://dev.voyage-rpc.moi.technology/devnet";
+// If you already created tokens in Mission 3, set these in .env
+const EXISTING_moiBTC = process.env.MOIBTC_ASSET_ID || "";
+const EXISTING_moiUSD = process.env.MOIUSD_ASSET_ID || "";
 
-// Exchange rate: 1 moiBTC = 50,000 moiUSD
-const RATE = 50000;
-
-// Set to true to create NEW tokens, false to use existing ones from Mission 3
-const CREATE_NEW_TOKENS = true;
-
-// If CREATE_NEW_TOKENS = false, fill these with your Mission 3 asset IDs
-const EXISTING_moiBTC = "";
-const EXISTING_moiUSD = "";
+// Set to false if you want to use existing tokens from Mission 3
+const CREATE_NEW_TOKENS = !EXISTING_moiBTC || !EXISTING_moiUSD;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MAIN DEPLOYMENT
@@ -43,6 +40,14 @@ async function deploy() {
     console.log("═══════════════════════════════════════════════════════");
     console.log("  SimpleSwap - Full Deployment");
     console.log("═══════════════════════════════════════════════════════\n");
+    
+    // Validate mnemonic
+    if (MNEMONIC === "your twelve word mnemonic phrase here") {
+        console.error("❌ Please set POOL_OWNER_MNEMONIC in your .env file");
+        console.log("\n   1. Copy .env.example to .env");
+        console.log("   2. Add your mnemonic from IOMe");
+        process.exit(1);
+    }
     
     // Connect wallet
     const provider = new JsonRpcProvider(RPC_URL);
@@ -91,8 +96,8 @@ async function deploy() {
         console.log(`   💰 Minted 100,000,000 moiUSD to pool\n`);
         
     } else {
-        // Use existing tokens from Mission 3
-        console.log("📦 Using existing tokens from Mission 3...");
+        // Use existing tokens from Mission 3 (loaded from .env)
+        console.log("📦 Using existing tokens from .env...");
         moiBTC_ID = EXISTING_moiBTC;
         moiUSD_ID = EXISTING_moiUSD;
         console.log(`   moiBTC: ${moiBTC_ID}`);
@@ -138,6 +143,15 @@ export const SWAP_CONFIG = {
   },
   RATE: ${RATE}
 };
+`);
+    
+    console.log(`
+📝 Update your .env with these values:
+
+POOL_OWNER_ADDRESS=${ownerAddress}
+MOIBTC_ASSET_ID=${moiBTC_ID}
+MOIUSD_ASSET_ID=${moiUSD_ID}
+SWAP_LOGIC_ID=${logicId}
 `);
     
     console.log(`
