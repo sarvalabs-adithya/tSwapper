@@ -1,60 +1,43 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// Mission 6: Soulbound Badge Contract
-// ═══════════════════════════════════════════════════════════════════════════
-// 
-// Goal: Create a "Soulbound" token that CANNOT be transferred.
-// Once issued to a user, it stays in their wallet forever.
+coco asset SoulboundBadge
+
+// ─────────────────────────────────────────────────────────────────
+// STATE: Remember who the admin (deployer) is
+// ─────────────────────────────────────────────────────────────────
+state logic:
+    admin Identifier
+
+// ─────────────────────────────────────────────────────────────────
+// TODO: Deploy — set the deployer as admin
+// ─────────────────────────────────────────────────────────────────
+// When the contract is deployed, store Sender as the admin.
 //
-// Key Concepts:
-// - Use "coco asset" to make this a native asset
-// - Override the Transfer endpoint to block all transfers
-// - Only admin can issue new badges
+// Hint: mutate Sender -> SoulboundBadge.Logic.admin
+endpoint deploy Init():
+    // 👇 YOUR CODE HERE
+
+
+// ─────────────────────────────────────────────────────────────────
+// TODO: Issue a badge — only admin can mint
+// ─────────────────────────────────────────────────────────────────
+// Steps:
+//   1. Read the admin from state using `observe`
+//   2. Check if Sender == admin, throw "Only Admin can issue badges!" if not
+//   3. Mint one badge to the recipient
 //
-// What you need to implement:
-// 1. STATE - Store the admin address
-// 2. DEPLOY - Set Sender as admin
-// 3. MINT - IssueBadge function (admin only)
-// 4. TRANSFER - Override to throw error (makes it soulbound!)
+// Hints:
+//   - memory admin Identifier
+//   - observe admin <- SoulboundBadge.Logic.admin
+//   - asset.Mint(token_id: 0, beneficiary: recipient, amount: U256(1))
+endpoint dynamic IssueBadge(recipient Identifier):
+    // 👇 YOUR CODE HERE
+
+
+// ─────────────────────────────────────────────────────────────────
+// TODO: Transfer — make this ALWAYS fail (soulbound!)
+// ─────────────────────────────────────────────────────────────────
+// This is what makes the token "soulbound" — it can never move.
+// Just throw an error. That's it. One line.
 //
-// ═══════════════════════════════════════════════════════════════════════════
-
-// TODO: Start with "coco asset SoulboundBadge" to make this a native asset
-
-
-// ─────────────────────────────────────────────────────────────
-// TODO: Define the STATE
-// ─────────────────────────────────────────────────────────────
-// Store the admin address who can issue badges
-
-// state logic:
-//     TODO: Add admin (Identifier)
-
-
-// ─────────────────────────────────────────────────────────────
-// TODO: DEPLOY - Initialize the contract
-// ─────────────────────────────────────────────────────────────
-// Set Sender as the admin
-
-// endpoint deploy Init():
-//     TODO: Set Sender as admin
-
-
-// ─────────────────────────────────────────────────────────────
-// TODO: IssueBadge - Only admin can mint badges
-// ─────────────────────────────────────────────────────────────
-// 1. Read admin from state
-// 2. Check if Sender == admin, throw if not
-// 3. Mint 1 badge to recipient using: asset.Mint(token_id: 0, beneficiary: recipient, amount: U256(1))
-
-// endpoint dynamic IssueBadge(recipient Identifier):
-//     TODO: Implement admin check and minting
-
-
-// ─────────────────────────────────────────────────────────────
-// TODO: Transfer - Override to make soulbound
-// ─────────────────────────────────────────────────────────────
-// This is the key! By defining Transfer and making it throw,
-// we block ALL transfers of this token.
-
-// endpoint Transfer(beneficiary Identifier, amount U256):
-//     TODO: Throw an error like "This asset is Soulbound and cannot be transferred!"
+// Hint: throw "This asset is Soulbound and cannot be transferred!"
+endpoint Transfer(beneficiary Identifier, amount U256):
+    // 👇 YOUR CODE HERE

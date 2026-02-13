@@ -1,17 +1,21 @@
-modules:
-  SimpleSwap:
-    path: SimpleSwap.coco
-    artifacts:
-      - json
+[coco]
+version = "0.7.0"
 
-coco: v0.7.0
+[module]
+name = "SimpleSwap"
+version = "0.0.1"
+license = []
+repository = ""
+authors = []
 
-repository:
-  name: SimpleSwap
-  version: 1.0.0
-  license: MIT
-  authors:
-    - MOI DevRel
+[target]
+os = "MOI"
+arch = "PISA"
 
-build:
-  output: ./
+[target.moi]
+format = "JSON"
+output = "simpleswap"
+
+[target.pisa]
+format = "BIN"
+version = "0.5.0"

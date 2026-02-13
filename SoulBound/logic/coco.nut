@@ -1,17 +1,34 @@
-modules:
-  SoulboundBadge:
-    path: SoulboundBadge.coco
-    artifacts:
-      - json
+[coco]
+version = "0.7.0"
 
-coco: v0.7.0
+[module]
+name = "SoulboundBadge"
+version = "0.0.1"
+license = []
+repository = ""
+authors = []
 
-repository:
-  name: SoulboundBadge
-  version: 1.0.0
-  license: MIT
-  authors:
-    - MOI DevRel
+[target]
+os = "MOI"
+arch = "PISA"
 
-build:
-  output: ./
+[target.moi]
+format = "JSON"
+output = "soulboundbadge"
+
+[target.pisa]
+format = "BIN"
+version = "0.5.0"
+
+[lab.render]
+big_int_as_hex = true
+bytes_as_hex = false
+
+[lab.config.default]
+env = "main"
+
+[lab.scripts]
+test-toggle = ["engines", "users", "logics"]
+
+[scripts]
+test-script = "coco compile .; pwd; uname -a"

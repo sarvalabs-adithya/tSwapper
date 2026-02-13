@@ -42,3 +42,17 @@ lerna-debug.log*
 *.tmp
 *.temp
 
+# Internal docs (not part of the scaffold)
+docs/
+
+# Compiler artifacts
+*.yaml
+
+# Lock files (students generate their own via npm install)
+package-lock.json
+
+# Legacy root-level files (challenges are now self-contained)
+/src/
+/vite.config.js
+/index.html
+/package.json

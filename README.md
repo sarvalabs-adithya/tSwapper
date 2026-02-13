@@ -1,72 +1,72 @@
-# tSwap - Your First DiApp on MOI
+# MOI Sprint
 
-A tutorial project for learning MOI Native Assets through hands-on missions.
+Learn MOI by building. Complete challenges. Ship code.
 
-## Quick Start
+Full guides: [moisprint.com](https://moisprint.com)
+
+---
+
+## Challenges
+
+Each challenge is a **standalone project** with its own frontend, deploy script, test suite, and contract.
+
+| # | Challenge | What you build | Directory |
+|---|-----------|---------------|-----------|
+| 01 | **Soulbound Badge** | Non-transferable token (identity/credentials) | `SoulBound/` |
+| 02 | **Simple Swap** | DEX with fixed-rate token swaps | `Swap/` |
+
+## Getting Started
+
+Pick a challenge and `cd` into its directory:
 
 ```bash
-# Install dependencies
+# Challenge 1
+cd SoulBound
 npm install
+npm run dev
 
-# Start development server
+# Challenge 2
+cd Swap
+npm install
 npm run dev
 ```
 
-## Tutorial
+Each challenge runs independently at http://localhost:5173 with its own checkpoint tracker.
 
-See [TUTORIAL.md](./TUTORIAL.md) for the complete step-by-step guide.
+## How It Works
 
-## Mission Overview
+You work across three windows:
 
-| Mission | Goal |
-|---------|------|
-| **Mission 1** | Connect to MOI network & create wallet |
-| **Mission 2** | Read account assets using TDU |
-| **Mission 3** | Create moiBTC and moiUSD tokens |
-| **Mission 4** | Transfer tokens between wallets |
-| **Mission 5** | Verify transactions on Voyage |
-| **Mission 6** | Build a Soulbound Token with Coco |
-| **Mission 7** | Build SimpleSwap using your tokens! |
+| Window | What you do |
+|--------|-------------|
+| **Browser** (localhost:5173) | Read instructions, see hints, click Verify |
+| **Editor** (VS Code / Cursor) | Write contract code (`.coco`), deploy scripts, and logic functions |
+| **Terminal** | Run deploy scripts and `node test.js` |
 
-## Project Structure
-
-```
-tSwap/
-├── src/
-│   ├── lib/
-│   │   └── logic.js      # TODO: Implement the missions here!
-│   ├── App.jsx           # Frontend (ready to use)
-│   ├── index.css         # Styles
-│   └── main.jsx          # Entry point
-├── Swap/
-│   ├── SimpleSwap.coco   # Mission 7: Swap contract
-│   ├── deploy.js         # Mission 7: Deployment script
-│   └── coco.nut          # Coco config
-├── SoulBound/
-│   ├── logic/
-│   │   └── SoulboundBadge.coco  # Mission 6: SBT contract
-│   └── deploy.js         # Mission 6: Deployment script
-└── TUTORIAL.md           # Full tutorial guide
-```
+Each challenge has:
+- A `.coco` contract with TODO stubs — **you write the implementation**
+- A `deploy.js` with TODO stubs — **you write the deploy script**
+- A `src/lib/logic.js` with TODO stubs — **you implement the JS interactions**
+- A `test.js` that verifies everything works end-to-end
 
 ## Prerequisites
 
-- Node.js v16+
-- [IOMe Wallet](https://voyage.moi.technology) - Generate and fund your wallet
-- [Coco CLI](https://cocolang.dev) - For compiling contracts (Missions 6-7)
+- Node.js v18+
+- A MOI wallet with devnet tokens ([voyage.moi.technology](https://voyage.moi.technology))
+- Your wallet mnemonic (12 or 24 words)
+
+## Network
+
+```
+https://dev.voyage-rpc.moi.technology/devnet
+```
 
 ## Resources
 
-- [JS-MOI-SDK Documentation](https://js-moi-sdk.docs.moi.technology)
-- [Coco Language](https://cocolang.dev)
+- [MOI SDK Docs](https://js-moi-sdk.docs.moi.technology)
 - [Voyage Explorer](https://voyage.moi.technology)
-- [Discord Community](https://discord.gg/GkP7mDw5)
-
-## Branches
-
-- `main` - Scaffold with TODO functions (start here!)
-- `solution` - Complete implementation
+- [Full Challenge Guides](https://moisprint.com)
 
 ## License
 
-MIT
+ISC

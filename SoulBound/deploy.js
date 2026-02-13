@@ -1,68 +1,66 @@
 /**
- * Soulbound Badge - Deployment & Interaction Script
+ * ============================================
+ * Challenge 1: Deploy Soulbound Badge
+ * ============================================
  * 
- * This script demonstrates how to:
- * 1. Deploy a Soulbound (non-transferable) asset
- * 2. Issue badges to recipients
+ * Your task:
+ *   1. Connect your wallet to MOI devnet
+ *   2. Deploy the SoulboundBadge asset using AssetFactory
+ *   3. Print the Asset ID to paste into src/lib/logic.js
  * 
- * Prerequisites:
- * 1. Compile the contract: cd logic && coco compile SoulboundBadge.coco --format json
- * 2. Update MNEMONIC below with your mnemonic
+ * Hints:
+ *   - Use AssetFactory.create(wallet, symbol, supply, manager, events, manifest, "Init")
+ *     The SoulboundBadge Init() takes no arguments, so no extra args needed.
+ *   - Call factory.send() to submit the transaction
+ *   - Call ix.result() to get the deployment result with asset_id
+ *   - The result is an array; grab result[0].asset_id
  * 
  * Run: NODE_TLS_REJECT_UNAUTHORIZED=0 node deploy.js
  */
 
-import { Wallet, JsonRpcProvider, getAssetDriver, LockType, RoutineOption } from 'js-moi-sdk';
-import manifest from './logic/soulboundbadge.json' with { type: 'json' };
+import { Wallet, JsonRpcProvider, AssetFactory } from "js-moi-sdk";
+import manifest from "./logic/soulboundbadge.json" with { type: "json" };
 
-// TODO: Replace with your mnemonic
-const MNEMONIC = "your twelve word mnemonic phrase here";
+// 📝 Replace with your mnemonic
+const MNEMONIC = "your twelve word mnemonic goes here replace this now";
+
+// Asset configuration
+const SYMBOL = "SBT";
+const SUPPLY = 1000000;
 
 async function main() {
-    console.log("🔗 Connecting to MOI Devnet...\n");
-    
-    // Setup wallet
-    const provider = new JsonRpcProvider('https://dev.voyage-rpc.moi.technology/devnet');
-    const wallet = await Wallet.fromMnemonic(MNEMONIC, "m/44'/6174'/7020'/0/0");
-    wallet.connect(provider);
-    
-    const address = wallet.getIdentifier().toHex();
-    console.log(`👛 Wallet: ${address}`);
-    
-    // TODO: After deploying, fill in the asset ID here
-    const assetId = "0x...your_deployed_asset_id...";
-    
-    console.log(`\n🚀 Interacting with Soulbound Asset: ${assetId}`);
-    
-    try {
-        // Initialize the Asset Driver
-        const driver = await getAssetDriver(assetId, wallet);
-        
-        // TODO: Replace with the recipient's address
-        const recipientAddress = "0x...recipient_address...";
-        
-        // Execute the "IssueBadge" Routine
-        const response = await driver.routines.IssueBadge(
-            recipientAddress,
-            new RoutineOption({
-                participants: [
-                    { 
-                        id: recipientAddress, 
-                        lock_type: LockType.MUTATE_LOCK 
-                    }
-                ]
-            })
-        );
-        
-        // Wait for Confirmation
-        const receipt = await response.wait();
-        console.log(`\n✅ Badge Issued!`);
-        console.log(`   Hash: ${response.hash}`);
-        console.log(`   Fuel Used: ${receipt.fuel_used}`);
-        
-    } catch (error) {
-        console.error(`\n❌ Failed: ${error.message}`);
-    }
+    const provider = new JsonRpcProvider("https://dev.voyage-rpc.moi.technology/devnet");
+
+    // ============================================
+    // TODO: Create wallet from mnemonic and connect to provider
+    // Hint: const wallet = await Wallet.fromMnemonic(MNEMONIC, "m/44'/6174'/7020'/0/0")
+    //       wallet.connect(provider)
+    // ============================================
+
+
+    // ============================================
+    // TODO: Get your wallet address (this will be the manager/admin)
+    // Hint: wallet.getIdentifier().toHex()
+    // ============================================
+
+
+    // ============================================
+    // TODO: Deploy the SoulboundBadge asset
+    // Hint: const factory = AssetFactory.create(
+    //         wallet, SYMBOL, SUPPLY, managerAddress, true, manifest, "Init"
+    //       )
+    //       const ix = await factory.send()
+    //       const result = await ix.result()
+    //       const assetId = result[0].asset_id (or however the SDK returns it)
+    // ============================================
+
+
+    // ============================================
+    // TODO: Print the Asset ID
+    // Then paste it into SOULBOUND_CONFIG.ASSET_ID in src/lib/logic.js
+    // ============================================
+
+    console.log("❌ Not implemented yet! Fill in the TODOs above.");
 }
 
-main();
+main().catch(console.error);

@@ -1,6 +1,6 @@
 {
-  "name": "tswap",
-  "version": "2.0.0",
+  "name": "simple-swap",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "js-moi-sdk": "^0.7.0-rc1",
+    "js-moi-sdk": "^0.7.0-rc6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
